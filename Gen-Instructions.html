@@ -959,13 +959,16 @@ function onDataReady() {
  *  4. Update #rowCount with the total number of rows
  */
 function loadDataset() {
+  // Transfer the RAW_DATA to the global window.DS for your teammates
   window.DS = [...RAW_DATA];
-
+  
+  // Show the data in the table
   renderTable(window.DS);
-
-  document.getElementById('rowCount').textContent =
-    window.DS.length + ' rows';
-
+  
+  // Update the row count label
+  document.getElementById('rowCount').textContent = `${window.DS.length} rows`;
+  
+  // Crucial: This tells Student 2 & 3's code to run!
   onDataReady();
 }
 
@@ -994,35 +997,23 @@ function loadDataset() {
  *  </tr>
  */
 function renderTable(data) {
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = "";
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = ""; // Clear the placeholder message
 
-  if (!data.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="10" style="text-align:center; padding:20px;">
-          No results found
-        </td>
-      </tr>`;
-    return;
-  }
-
-  data.forEach((d, i) => {
+  data.forEach((student, index) => {
     const tr = document.createElement("tr");
-
     tr.innerHTML = `
-      <td>${i + 1}</td>
-      <td>${d.name}</td>
-      <td class="numeric">${d.studyHours}</td>
-      <td class="numeric">${d.attendance}</td>
-      <td class="numeric">${d.midterm}</td>
-      <td class="numeric">${d.score}</td>
-      <td class="numeric">${d.assignments}</td>
-      <td class="numeric">${d.sleep}</td>
-      <td>${d.job ? "Yes" : "No"}</td>
-      <td class="grade-${d.grade}">${d.grade}</td>
+      <td>${index + 1}</td>
+      <td>${student.name}</td>
+      <td class="numeric">${student.studyHours}</td>
+      <td class="numeric">${student.attendance}%</td>
+      <td class="numeric">${student.midterm}</td>
+      <td class="numeric">${student.score}</td>
+      <td class="numeric">${student.assignments}</td>
+      <td class="numeric">${student.sleep}</td>
+      <td>${student.job ? 'Yes' : 'No'}</td>
+      <td class="grade-${student.grade}">${student.grade}</td>
     `;
-
     tbody.appendChild(tr);
   });
 }
