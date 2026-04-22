@@ -959,14 +959,16 @@ function onDataReady() {
  *  4. Update #rowCount with the total number of rows
  */
 function loadDataset() {
-  // TODO: Implement this function
-  // Hint: window.DS = [...RAW_DATA];
-  // Hint: renderTable(window.DS);
-  // Hint: document.getElementById('rowCount').textContent = window.DS.length + ' rows';
-  // Hint: onDataReady();
+  window.DS = [...RAW_DATA];
 
-  console.warn("⚠ Student 1: loadDataset() is not yet implemented.");
+  renderTable(window.DS);
+
+  document.getElementById('rowCount').textContent =
+    window.DS.length + ' rows';
+
+  onDataReady();
 }
+
 
 /**
  * STUDENT 1 TODO — renderTable(data)
@@ -992,8 +994,37 @@ function loadDataset() {
  *  </tr>
  */
 function renderTable(data) {
-  // TODO: Implement this function
-  console.warn("⚠ Student 1: renderTable() is not yet implemented.");
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = "";
+
+  if (!data.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="10" style="text-align:center; padding:20px;">
+          No results found
+        </td>
+      </tr>`;
+    return;
+  }
+
+  data.forEach((d, i) => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${d.name}</td>
+      <td class="numeric">${d.studyHours}</td>
+      <td class="numeric">${d.attendance}</td>
+      <td class="numeric">${d.midterm}</td>
+      <td class="numeric">${d.score}</td>
+      <td class="numeric">${d.assignments}</td>
+      <td class="numeric">${d.sleep}</td>
+      <td>${d.job ? "Yes" : "No"}</td>
+      <td class="grade-${d.grade}">${d.grade}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
 }
 
 /**
@@ -1012,8 +1043,31 @@ function renderTable(data) {
  *  'name' → alphabetical, others → numeric descending
  */
 function applyFilterSort() {
-  // TODO: Implement this function
-  console.warn("⚠ Student 1: applyFilterSort() is not yet implemented.");
+  const filter = document.getElementById('filterInput').value.toLowerCase();
+  const sortKey = document.getElementById('sortSelect').value;
+
+  let result = [...window.DS];
+
+  if (filter) {
+    result = result.filter(d =>
+      d.name.toLowerCase().includes(filter)
+    );
+  }
+
+  if (sortKey) {
+    result.sort((a, b) => {
+      if (sortKey === "name") {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b[sortKey] - a[sortKey];
+      }
+    });
+  }
+
+  renderTable(result);
+
+  document.getElementById('rowCount').textContent =
+    result.length + ' rows';
 }
 
 /**
@@ -1028,8 +1082,13 @@ function applyFilterSort() {
  *  4. Update #rowCount
  */
 function resetTable() {
-  // TODO: Implement this function
-  console.warn("⚠ Student 1: resetTable() is not yet implemented.");
+  document.getElementById('filterInput').value = "";
+  document.getElementById('sortSelect').value = "";
+
+  renderTable(window.DS);
+
+  document.getElementById('rowCount').textContent =
+    window.DS.length + ' rows';
 }
 
 /* Student 1 entry point — runs when DOM is ready */
