@@ -48,20 +48,17 @@
 
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem; }
     
-    /* Toolbar/Filter Styles */
     .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
     input, select, button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; }
     button { cursor: pointer; font-weight: 600; }
     button:hover { border-color: var(--accent); }
 
-    /* Table Styles */
     .table-wrap { overflow-x: auto; margin-top: 1rem; max-height: 400px; overflow-y: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     th { position: sticky; top: 0; background: var(--surface2); color: var(--accent); text-align: left; padding: 10px; font-size: 0.75rem; text-transform: uppercase; }
     td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
     tr:hover { background: rgba(88, 166, 255, 0.05); }
 
-    /* Analytics Grid for Student 3 */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem; }
     .stat-card { background: var(--surface2); padding: 1rem; border-radius: 6px; border: 1px solid var(--border); }
     .stat-val { font-size: 1.5rem; font-weight: bold; color: var(--accent); font-family: var(--mono); display: block; margin: 5px 0; }
@@ -166,7 +163,7 @@
 <script>
 /**
  * --------------------------------------------------------------------------
- * STUDENT 1: REPO OWNER & DATA ENGINE
+ * STUDENT 1: REPO OWNER & DATA ENGINE (MAGBANUA)
  * --------------------------------------------------------------------------
  */
 window.DS = []; // Global dataset access
@@ -174,7 +171,7 @@ window.DS = []; // Global dataset access
 // Hook for Students 2 & 3
 function onDataReady() {
   console.log("🚀 Group 4 Engine: Data successfully parsed.");
-  // Students 2 & 3 will add their calls here
+  // Dito tatawagin nina Laxa at Griar ang kanilang mga functions
 }
 
 async function loadDataset() {
@@ -257,7 +254,6 @@ function resetTable() {
   document.getElementById('rowCount').textContent = window.DS.length + " ROWS FOUND";
 }
 
-// Initial Run
 document.addEventListener('DOMContentLoaded', loadDataset);
 
 /**
