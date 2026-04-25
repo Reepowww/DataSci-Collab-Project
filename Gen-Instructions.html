@@ -449,7 +449,90 @@ function renderCharts() {
 // STUDENT 3: STATISTICS (GRIAR)
 // -----------------------------------------------
 // renderStats() goes here
+function renderStats() {
+  const DS = window.DS;
+  if (!DS || !DS.length) return;
 
+  // Convert usage to numbers
+  const usage = DS.map(d => parseFloat(d.Daily_Usage_Hours) || 0);
+
+  // Impact scoring system
+  const impactScore = {
+    "Improved": 1,
+    "No Change": 0,
+    "Declined": -1,
+    "Slightly Declined": -0.5
+  };
+
+  const impact = DS.map(d => impactScore[d.Impact_on_Grades] ?? 0);
+
+  // -------------------
+  // MEAN
+  // -------------------
+  const mean = usage.reduce((a, b) => a + b, 0) / usage.length;
+
+  // -------------------
+  // MODE
+  // -------------------
+  const freq = {};
+  DS.forEach(d => {
+    freq[d.AI_Tool_Used] = (freq[d.AI_Tool_Used] || 0) + 1;
+  });
+
+  const mode = Object.keys(freq).reduce((a, b) =>
+    freq[a] > freq[b] ? a : b
+  );
+
+  // -------------------
+  // STANDARD DEVIATION
+  // -------------------
+  const variance =
+    usage.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / usage.length;
+
+  const stdDev = Math.sqrt(variance);
+
+  // -------------------
+  // PEARSON CORRELATION
+  // -------------------
+  const impactMean = impact.reduce((a, b) => a + b, 0) / impact.length;
+
+  let num = 0, denX = 0, denY = 0;
+
+  for (let i = 0; i < DS.length; i++) {
+    const dx = usage[i] - mean;
+    const dy = impact[i] - impactMean;
+
+    num += dx * dy;
+    denX += dx * dx;
+    denY += dy * dy;
+  }
+
+  const r = num / Math.sqrt(denX * denY || 1);
+
+  // -------------------
+  // REGRESSION LINE
+  // y = a + bx
+  // -------------------
+  const b = num / (denX || 1);
+  const a = impactMean - b * mean;
+
+  // -------------------
+  // UPDATE UI
+  // -------------------
+  document.getElementById("statMean").textContent = mean.toFixed(2);
+  document.getElementById("statMode").textContent = mode;
+  document.getElementById("statStdDev").textContent = stdDev.toFixed(2);
+  document.getElementById("rPearson").textContent = r.toFixed(3);
+  document.getElementById("rEquation").textContent =
+    `y = ${a.toFixed(2)} + ${b.toFixed(2)}x`;
+}
+
+// connect it to dataset loading
+function onDataReady() {
+  console.log("Dataset loaded:", window.DS.length);
+  renderCharts();
+  renderStats(); // IMPORTANT
+}
 </script>
 </body>
 </html>
