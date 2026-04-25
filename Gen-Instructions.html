@@ -13,7 +13,7 @@
       --surface: #161b22;
       --surface2: #21262d;
       --border: #30363d;
-      --accent: #58a6ff;
+      --accent: #58a6ff; 
       --text: #c9d1d9;
       --text-dim: #8b949e;
       --success: #238636;
@@ -47,7 +47,7 @@
     .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); }
 
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem; }
-
+    
     .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
     input, select, button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; }
     button { cursor: pointer; font-weight: 600; }
@@ -66,49 +66,6 @@
 
     .grade-up { color: #3fb950; }
     .grade-down { color: #f85149; }
-
-    /* viz grid */
-    .viz-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-    .chart-box {
-      background: var(--surface2);
-      border-radius: 6px;
-      padding: 1rem;
-      border: 1px solid var(--border);
-    }
-    .chart-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-dim);
-      margin: 0 0 0.75rem;
-      font-family: var(--mono);
-    }
-    .chart-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--text-dim);
-    }
-    .chart-legend span {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    @media (max-width: 700px) {
-      .viz-grid { grid-template-columns: 1fr; }
-    }
   </style>
 </head>
 <body>
@@ -122,8 +79,6 @@
 </header>
 
 <main>
-
-  <!-- 01: Dataset Navigator — Magbanua -->
   <section class="section">
     <div class="section-header">
       <h2>01 · Dataset Navigator</h2>
@@ -164,46 +119,16 @@
     </div>
   </section>
 
-  <!-- 02: Data Visualization — Laxa -->
   <section class="section">
     <div class="section-header">
       <h2>02 · Data Visualization</h2>
       <span class="badge">STUDENT 2: LAXA</span>
     </div>
-    <div class="panel">
-      <div class="viz-grid" id="vizGrid">
-        <div class="chart-box">
-          <p class="chart-label">AI Tool Usage Distribution</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartTool" role="img" aria-label="Pie chart showing AI tool usage distribution">AI tool usage breakdown.</canvas>
-          </div>
-          <div class="chart-legend" id="legendTool"></div>
-        </div>
-        <div class="chart-box">
-          <p class="chart-label">Grade Impact by AI Tool</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartImpact" role="img" aria-label="Stacked bar chart of grade impact per AI tool">Grade impact per tool.</canvas>
-          </div>
-          <div class="chart-legend" id="legendImpact"></div>
-        </div>
-        <div class="chart-box">
-          <p class="chart-label">Daily Usage Hours Distribution</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartUsage" role="img" aria-label="Histogram of daily usage hours">Usage hours distribution.</canvas>
-          </div>
-        </div>
-        <div class="chart-box">
-          <p class="chart-label">Satisfaction Level Breakdown</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartSat" role="img" aria-label="Doughnut chart of satisfaction levels">Satisfaction level percentages.</canvas>
-          </div>
-          <div class="chart-legend" id="legendSat"></div>
-        </div>
-      </div>
+    <div class="panel" id="chartArea" style="min-height: 300px; display: flex; align-items: center; justify-content: center; border: 2px dashed var(--border);">
+       <p style="color: var(--text-dim); font-family: var(--mono);">[ Waiting for Student 2 logic ]</p>
     </div>
   </section>
 
-  <!-- 03: Statistical Engine — Griar -->
   <section class="section">
     <div class="section-header">
       <h2>03 · Statistical Engine</h2>
@@ -233,20 +158,20 @@
       </div>
     </div>
   </section>
-
 </main>
 
 <script>
-// -----------------------------------------------
-// STUDENT 1: DATA ENGINE (MAGBANUA)
-// -----------------------------------------------
+/**
+ * --------------------------------------------------------------------------
+ * STUDENT 1: REPO OWNER & DATA ENGINE (MAGBANUA)
+ * --------------------------------------------------------------------------
+ */
+window.DS = []; // Global dataset access
 
-window.DS = [];
-
+// Hook for Students 2 & 3
 function onDataReady() {
-  console.log("Group 4: data loaded, " + window.DS.length + " rows");
-  renderCharts();
-  // Griar: call your stats function here
+  console.log("🚀 Group 4 Engine: Data successfully parsed.");
+  // Dito tatawagin nina Laxa at Griar ang kanilang mga functions
 }
 
 async function loadDataset() {
@@ -272,9 +197,8 @@ async function loadDataset() {
     onDataReady();
 
   } catch (error) {
-    console.error("Load failed:", error);
-    document.getElementById('tableBody').innerHTML =
-      `<tr><td colspan="8" style="color:var(--danger); text-align:center;">Failed to load CSV. Open with Live Server.</td></tr>`;
+    console.error("Critical Error:", error);
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center;">Failed to load CSV. Open with Live Server.</td></tr>`;
   }
 }
 
@@ -284,10 +208,8 @@ function renderTable(data) {
 
   data.forEach(s => {
     const tr = document.createElement("tr");
-    const impactColor = s.Impact_on_Grades === "Improved"
-      ? "grade-up"
-      : (s.Impact_on_Grades && s.Impact_on_Grades.includes("Decline") ? "grade-down" : "");
-
+    const impactColor = s.Impact_on_Grades === "Improved" ? "grade-up" : (s.Impact_on_Grades.includes("Decline") ? "grade-down" : "");
+    
     tr.innerHTML = `
       <td>${s.Student_ID}</td>
       <td>${s.Age}</td>
@@ -308,8 +230,8 @@ function applyFilterSort() {
   let res = [...window.DS];
 
   if (filter) {
-    res = res.filter(d =>
-      d.AI_Tool_Used.toLowerCase().includes(filter) ||
+    res = res.filter(d => 
+      d.AI_Tool_Used.toLowerCase().includes(filter) || 
       d.Purpose.toLowerCase().includes(filter)
     );
   }
@@ -334,121 +256,19 @@ function resetTable() {
 
 document.addEventListener('DOMContentLoaded', loadDataset);
 
+/**
+ * --------------------------------------------------------------------------
+ * STUDENT 2: VISUALIZATION (LAXA)
+ * --------------------------------------------------------------------------
+ */
+// TODO: Implement chart logic here
 
-// -----------------------------------------------
-// STUDENT 2: VISUALIZATION (LAXA)
-// -----------------------------------------------
-
-const TOOL_COLORS   = ['#58a6ff','#3fb950','#f78166','#d2a8ff','#ffa657','#79c0ff','#56d364','#ff7b72'];
-const IMPACT_COLORS = { 'Improved':'#3fb950', 'No Change':'#8b949e', 'Declined':'#f85149', 'Slightly Declined':'#ffa657' };
-const SAT_COLORS    = { 'High':'#3fb950', 'Medium':'#ffa657', 'Low':'#f85149' };
-
-function renderCharts() {
-  const DS = window.DS;
-  const toolCounts = {}, usageBuckets = {}, satCounts = {};
-
-  DS.forEach(d => {
-    const tool  = d.AI_Tool_Used  || 'Unknown';
-    const sat   = d.Satisfaction_Level || 'Unknown';
-    const usage = parseFloat(d.Daily_Usage_Hours) || 0;
-
-    toolCounts[tool] = (toolCounts[tool] || 0) + 1;
-    satCounts[sat]   = (satCounts[sat]   || 0) + 1;
-
-    const bucket = Math.floor(usage) + '-' + (Math.floor(usage) + 1) + 'h';
-    usageBuckets[bucket] = (usageBuckets[bucket] || 0) + 1;
-  });
-
-  // top 8 tools by count
-  const tools   = Object.keys(toolCounts).sort((a,b) => toolCounts[b]-toolCounts[a]).slice(0,8);
-  const tColors = tools.map((_,i) => TOOL_COLORS[i % TOOL_COLORS.length]);
-
-  // shared axis style
-  const axisStyle = { ticks:{ color:'#8b949e' }, grid:{ color:'#30363d' } };
-
-  // chart 1 — pie: which tools are most used
-  new Chart(document.getElementById('chartTool'), {
-    type: 'pie',
-    data: {
-      labels: tools,
-      datasets: [{ data: tools.map(t => toolCounts[t]), backgroundColor: tColors, borderColor:'#161b22', borderWidth:2 }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} } }
-  });
-  const leg1 = document.getElementById('legendTool');
-  tools.forEach((t,i) => {
-    leg1.innerHTML += `<span><span class="legend-dot" style="background:${tColors[i]}"></span>${t}</span>`;
-  });
-
-  // chart 2 — stacked bar: grade impact broken down per tool
-  const impactCats = ['Improved','No Change','Declined','Slightly Declined'];
-  new Chart(document.getElementById('chartImpact'), {
-    type: 'bar',
-    data: {
-      labels: tools,
-      datasets: impactCats.map(cat => ({
-        label: cat,
-        data: tools.map(t => DS.filter(d => d.AI_Tool_Used===t && d.Impact_on_Grades===cat).length),
-        backgroundColor: IMPACT_COLORS[cat] || '#8b949e',
-        borderRadius: 3,
-        borderSkipped: false
-      }))
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales: {
-        x: { stacked:true, ticks:{ color:'#8b949e', font:{size:10}, maxRotation:45 }, grid:{ color:'#30363d' } },
-        y: { stacked:true, ...axisStyle }
-      }
-    }
-  });
-  const leg2 = document.getElementById('legendImpact');
-  impactCats.forEach(cat => {
-    leg2.innerHTML += `<span><span class="legend-dot" style="background:${IMPACT_COLORS[cat]}"></span>${cat}</span>`;
-  });
-
-  // chart 3 — bar: how many hours students use AI per day
-  const buckets = Object.keys(usageBuckets).sort((a,b) => parseFloat(a)-parseFloat(b));
-  new Chart(document.getElementById('chartUsage'), {
-    type: 'bar',
-    data: {
-      labels: buckets,
-      datasets: [{ label:'Students', data: buckets.map(b => usageBuckets[b]), backgroundColor:'#58a6ff', borderRadius:3, borderSkipped:false }]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales: {
-        x: { ticks:{ color:'#8b949e', font:{size:10} }, grid:{ color:'#30363d' } },
-        y: axisStyle
-      }
-    }
-  });
-
-  // chart 4 — doughnut: overall satisfaction split
-  const satLabels = Object.keys(satCounts);
-  const satClrs   = satLabels.map(s => SAT_COLORS[s] || '#8b949e');
-  new Chart(document.getElementById('chartSat'), {
-    type: 'doughnut',
-    data: {
-      labels: satLabels,
-      datasets: [{ data: satLabels.map(s => satCounts[s]), backgroundColor: satClrs, borderColor:'#161b22', borderWidth:2 }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} } }
-  });
-  const leg4 = document.getElementById('legendSat');
-  satLabels.forEach((s,i) => {
-    const pct = ((satCounts[s] / DS.length) * 100).toFixed(1);
-    leg4.innerHTML += `<span><span class="legend-dot" style="background:${satClrs[i]}"></span>${s} ${pct}%</span>`;
-  });
-}
-
-
-// -----------------------------------------------
-// STUDENT 3: STATISTICS (GRIAR)
-// -----------------------------------------------
-// renderStats() goes here
+/**
+ * --------------------------------------------------------------------------
+ * STUDENT 3: STATISTICS (GRIAR)
+ * --------------------------------------------------------------------------
+ */
+// TODO: Implement renderStats() and math functions here
 
 </script>
 </body>
