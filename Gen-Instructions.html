@@ -148,11 +148,11 @@
     <div class="panel">
       <div class="viz-grid">
         <div class="chart-box">
-          <p class="chart-label">Daily Usage Distribution (Bar)</p>
+          <p class="chart-label">AI Tool Usage Count (Bar)</p>
           <div style="position:relative; height:200px;"><canvas id="chartBar"></canvas></div>
         </div>
         <div class="chart-box">
-          <p class="chart-label">Usage vs Satisfaction (Scatter)</p>
+          <p class="chart-label">Age vs Daily Usage Hours (Scatter)</p>
           <div style="position:relative; height:200px;"><canvas id="chartScatter"></canvas></div>
         </div>
         <div class="chart-box">
@@ -296,43 +296,43 @@ function destroyChart(id) {
   }
 }
 
-// bar chart — usage hours vs number of students per hour range
+// bar chart — AI tool vs number of students using it
 function drawBarChart(canvasId, data) {
   destroyChart(canvasId);
 
-  const groups = {};
+  const toolCounts = {};
   data.forEach(d => {
-    const bucket = Math.floor(d.Daily_Usage_Hours) + '-' + (Math.floor(d.Daily_Usage_Hours) + 1) + 'h';
-    groups[bucket] = (groups[bucket] || 0) + 1;
+    const tool = d.AI_Tool_Used || 'Unknown';
+    toolCounts[tool] = (toolCounts[tool] || 0) + 1;
   });
-  const labels = Object.keys(groups).sort((a, b) => parseFloat(a) - parseFloat(b));
+  const labels = Object.keys(toolCounts).sort((a, b) => toolCounts[b] - toolCounts[a]);
+  const colors = ['#6366f1','#0ea5e9','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#f43f5e'];
 
   chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
     type: 'bar',
     data: {
       labels,
-      datasets: [{ label: 'Students', data: labels.map(l => groups[l]), backgroundColor: '#6366f1', borderRadius: 6 }]
+      datasets: [{ label: 'Students', data: labels.map(l => toolCounts[l]), backgroundColor: labels.map((_, i) => colors[i % colors.length]), borderRadius: 6 }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+        x: { ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45 }, grid: { display: false } },
         y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#f1f5f9' } }
       }
     }
   });
 }
 
-// scatter plot — daily usage hours vs satisfaction level
-// satisfaction mapped: Low=1, Medium=2, High=3
+// scatter plot — age vs daily usage hours
+// shows whether older or younger students use AI more
 function drawScatterPlot(canvasId, data) {
   destroyChart(canvasId);
 
-  const satMap = { 'Low': 1, 'Medium': 2, 'High': 3 };
   const points = data.map(d => ({
-    x: parseFloat(d.Daily_Usage_Hours) || 0,
-    y: satMap[d.Satisfaction_Level] || 0
+    x: parseFloat(d.Age) || 0,
+    y: parseFloat(d.Daily_Usage_Hours) || 0
   }));
 
   chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
@@ -345,32 +345,32 @@ function drawScatterPlot(canvasId, data) {
       plugins: { legend: { display: false } },
       scales: {
         x: {
-          title: { display: true, text: 'Daily Usage (hrs)', color: '#94a3b8', font: { size: 10 } },
+          title: { display: true, text: 'Age', color: '#94a3b8', font: { size: 10 } },
           ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#f1f5f9' }
         },
         y: {
-          title: { display: true, text: 'Satisfaction', color: '#94a3b8', font: { size: 10 } },
-          ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => ['','Low','Medium','High'][v] || v },
-          grid: { color: '#f1f5f9' }, min: 0, max: 4
+          title: { display: true, text: 'Daily Usage (hrs)', color: '#94a3b8', font: { size: 10 } },
+          ticks: { color: '#94a3b8', font: { size: 10 } },
+          grid: { color: '#f1f5f9' }, min: 0
         }
       }
     }
   });
 }
 
-// histogram — frequency of students per usage hour bucket
+// histogram — distribution of daily usage hours across all students
 function drawHistogram(canvasId, data) {
   destroyChart(canvasId);
 
   const bins = { '0-1h': 0, '1-2h': 0, '2-3h': 0, '3-4h': 0, '4-5h': 0, '5h+': 0 };
   data.forEach(d => {
     const h = parseFloat(d.Daily_Usage_Hours) || 0;
-    if (h < 1) bins['0-1h']++;
+    if (h < 1)      bins['0-1h']++;
     else if (h < 2) bins['1-2h']++;
     else if (h < 3) bins['2-3h']++;
     else if (h < 4) bins['3-4h']++;
     else if (h < 5) bins['4-5h']++;
-    else bins['5h+']++;
+    else            bins['5h+']++;
   });
 
   chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
