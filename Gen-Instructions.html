@@ -3,236 +3,174 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Group 4 — AI Student Analytics Dashboard</title>
-
+  <title>eduAI — Student Analytics</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-
   <style>
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface2: #21262d;
-      --border: #30363d;
-      --accent: #58a6ff;
-      --text: #c9d1d9;
-      --text-dim: #8b949e;
-      --success: #238636;
-      --danger: #da3633;
-      --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      --bg: #f8fafc; --surface: #ffffff; --surface-raised: #f1f5f9;
+      --border: #e2e8f0; --accent: #6366f1; --accent-soft: rgba(99,102,241,0.1);
+      --secondary: #0ea5e9; --text: #1e293b; --text-muted: #64748b; --text-dim: #94a3b8;
+      --success: #10b981; --danger: #ef4444; --radius: 16px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0/0.05),0 2px 4px -2px rgb(0 0 0/0.05);
+      --transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      margin: 0;
-      line-height: 1.5;
-    }
-
-    header {
-      background: var(--surface);
-      padding: 1.5rem 2rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    h1 { font-size: 1.25rem; font-family: var(--mono); color: var(--accent); margin: 0; }
-    main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-
-    .section { margin-bottom: 3rem; }
-    .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
-    .section-header h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); }
-    .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); }
-
-    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.5rem; }
-
-    .toolbar { display: flex; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
-    input, select, button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; }
-    button { cursor: pointer; font-weight: 600; }
-    button:hover { border-color: var(--accent); }
-
-    .table-wrap { overflow-x: auto; margin-top: 1rem; max-height: 400px; overflow-y: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    th { position: sticky; top: 0; background: var(--surface2); color: var(--accent); text-align: left; padding: 10px; font-size: 0.75rem; text-transform: uppercase; }
-    td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
-    tr:hover { background: rgba(88, 166, 255, 0.05); }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem; }
-    .stat-card { background: var(--surface2); padding: 1rem; border-radius: 6px; border: 1px solid var(--border); }
-    .stat-val { font-size: 1.5rem; font-weight: bold; color: var(--accent); font-family: var(--mono); display: block; margin: 5px 0; }
-    .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
-
-    .grade-up { color: #3fb950; }
-    .grade-down { color: #f85149; }
-
-    /* viz grid */
-    .viz-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-    .chart-box {
-      background: var(--surface2);
-      border-radius: 6px;
-      padding: 1rem;
-      border: 1px solid var(--border);
-    }
-    .chart-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-dim);
-      margin: 0 0 0.75rem;
-      font-family: var(--mono);
-    }
-    .chart-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--text-dim);
-    }
-    .chart-legend span {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    @media (max-width: 700px) {
-      .viz-grid { grid-template-columns: 1fr; }
-    }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,system-ui,sans-serif; margin:0; line-height:1.5; -webkit-font-smoothing:antialiased; }
+    header { position:sticky; top:0; z-index:1000; background:rgba(255,255,255,0.8); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0.75rem 2rem; display:flex; justify-content:space-between; align-items:center; }
+    .logo-container h1 { font-size:1.25rem; font-weight:800; letter-spacing:-0.02em; margin:0; color:var(--text); }
+    .logo-container span { color:var(--accent); }
+    main { max-width:1200px; margin:0 auto; padding:2rem; }
+    .section { margin-bottom:3rem; }
+    .section-header { display:flex; align-items:center; gap:10px; margin-bottom:1rem; }
+    .section-header h2 { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-dim); margin:0; font-weight:700; }
+    .badge { font-size:0.65rem; padding:4px 10px; border-radius:20px; background:var(--accent-soft); color:var(--accent); border:1px solid transparent; font-weight:700; }
+    .panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow); }
+    .toolbar { display:flex; gap:10px; margin-bottom:1.25rem; align-items:center; flex-wrap:wrap; }
+    input,select,button { background:var(--surface-raised); border:1px solid var(--border); color:var(--text); padding:8px 14px; border-radius:10px; font-size:0.85rem; transition:var(--transition); outline:none; }
+    input:focus,select:focus { border-color:var(--accent); background:var(--surface); }
+    button { cursor:pointer; font-weight:600; background:var(--accent); color:white; border:none; }
+    button:hover { filter:brightness(1.05); transform:translateY(-1px); }
+    button[onclick="resetTable()"] { background:white; color:var(--text-muted); border:1px solid var(--border); }
+    .table-wrap { overflow-x:auto; border-radius:12px; border:1px solid var(--border); max-height:380px; }
+    table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+    th { background:#f8fafc; color:var(--text-muted); text-align:left; padding:12px 16px; font-weight:600; position:sticky; top:0; z-index:10; border-bottom:1px solid var(--border); }
+    td { padding:10px 16px; border-bottom:1px solid var(--border); color:var(--text-muted); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:var(--surface-raised); color:var(--text); }
+    tr strong { color:var(--text); }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
+    .stat-card { background:var(--surface); padding:1.25rem; border-radius:var(--radius); border:1px solid var(--border); transition:var(--transition); }
+    .stat-card:hover { border-color:var(--accent); }
+    .stat-val { font-size:1.5rem; font-weight:800; color:var(--text); display:block; margin-top:4px; }
+    .stat-label { font-size:0.65rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; }
+    .grade-up { color:var(--success); font-weight:700; }
+    .grade-down { color:var(--danger); font-weight:700; }
+    .viz-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+    .chart-box { background:var(--surface); border-radius:var(--radius); padding:1.25rem; border:1px solid var(--border); }
+    .chart-label { font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:1rem; }
+    .chart-legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:1rem; font-size:10px; color:var(--text-dim); }
+    .chart-legend span { display:flex; align-items:center; gap:4px; background:var(--surface-raised); padding:2px 8px; border-radius:4px; }
+    .legend-dot { width:6px; height:6px; border-radius:50%; }
+    @media(max-width:800px){ .viz-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>GROUP_4_AI_STUDENT_IMPACT.exe</h1>
-    <small style="color: var(--text-dim)">University of Perpetual Help – Molino · Data Science 2026</small>
-  </div>
-  <div class="badge" style="color: var(--accent)">STATUS: ACTIVE</div>
+  <div class="logo-container"><h1>edu<span>AI</span></h1></div>
+  <div class="badge">V2.1.0 STABLE</div>
 </header>
 
 <main>
 
-  <!-- 01: Dataset Navigator — Magbanua -->
+  <!-- 01: Analytics Explorer — Magbanua -->
   <section class="section">
     <div class="section-header">
-      <h2>01 · Dataset Navigator</h2>
-      <span class="badge">STUDENT 1: MAGBANUA</span>
+      <span class="badge">MAGBANUA</span>
+      <h2>01 · Analytics Explorer</h2>
     </div>
     <div class="panel">
       <div class="toolbar">
-        <input type="text" id="filterInput" placeholder="Filter AI Tool or Purpose..." onkeyup="if(event.key==='Enter') applyFilterSort()">
+        <input type="text" id="filterInput" placeholder="Filter tools or purpose..." onkeyup="if(event.key==='Enter') applyFilterSort()">
         <select id="sortSelect">
-          <option value="">Sort By...</option>
+          <option value="">Sort...</option>
           <option value="Age">Age</option>
-          <option value="Daily_Usage_Hours">Daily Usage</option>
-          <option value="Student_ID">Student ID</option>
+          <option value="Daily_Usage_Hours">Usage</option>
+          <option value="Student_ID">ID</option>
         </select>
-        <button onclick="applyFilterSort()" style="background: var(--accent); color: #0d1117;">Run Query</button>
+        <button onclick="applyFilterSort()">Query</button>
         <button onclick="resetTable()">Reset</button>
-        <div id="rowCount" style="margin-left: auto; font-family: var(--mono); font-size: 0.8rem;">— Rows Loaded</div>
+        <div id="rowCount" style="margin-left:auto;font-size:0.7rem;color:var(--text-dim);font-weight:700;">— ROWS</div>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Age</th>
-              <th>City</th>
-              <th>AI Tool</th>
-              <th>Usage (Hrs)</th>
-              <th>Purpose</th>
-              <th>Grade Impact</th>
-              <th>Satisfaction</th>
+              <th>ID</th><th>Age</th><th>City</th><th>AI Tool</th>
+              <th>Usage</th><th>Purpose</th><th>Impact</th><th>Satisfaction</th>
             </tr>
           </thead>
           <tbody id="tableBody">
-            <tr><td colspan="8" style="text-align: center; opacity: 0.5;">Awaiting Data Stream...</td></tr>
+            <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-dim);">Connecting to data source...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- 02: Data Visualization — Laxa -->
+  <!-- 02: Visual Intelligence — Laxa -->
   <section class="section">
     <div class="section-header">
-      <h2>02 · Data Visualization</h2>
-      <span class="badge">STUDENT 2: LAXA</span>
+      <span class="badge">LAXA</span>
+      <h2>02 · Visual Intelligence</h2>
     </div>
     <div class="panel">
-      <div class="viz-grid" id="vizGrid">
+      <div class="viz-grid">
         <div class="chart-box">
-          <p class="chart-label">AI Tool Usage Distribution</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartTool" role="img" aria-label="Pie chart showing AI tool usage distribution">AI tool usage breakdown.</canvas>
-          </div>
-          <div class="chart-legend" id="legendTool"></div>
+          <p class="chart-label">Daily Usage Distribution (Bar)</p>
+          <div style="position:relative;height:200px;"><canvas id="chartBar"></canvas></div>
         </div>
         <div class="chart-box">
-          <p class="chart-label">Grade Impact by AI Tool</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartImpact" role="img" aria-label="Stacked bar chart of grade impact per AI tool">Grade impact per tool.</canvas>
-          </div>
-          <div class="chart-legend" id="legendImpact"></div>
+          <p class="chart-label">Usage vs Satisfaction (Scatter)</p>
+          <div style="position:relative;height:200px;"><canvas id="chartScatter"></canvas></div>
         </div>
         <div class="chart-box">
-          <p class="chart-label">Daily Usage Hours Distribution</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartUsage" role="img" aria-label="Histogram of daily usage hours">Usage hours distribution.</canvas>
-          </div>
+          <p class="chart-label">Usage Hours Histogram</p>
+          <div style="position:relative;height:200px;"><canvas id="chartHistogram"></canvas></div>
         </div>
         <div class="chart-box">
-          <p class="chart-label">Satisfaction Level Breakdown</p>
-          <div style="position: relative; height: 220px;">
-            <canvas id="chartSat" role="img" aria-label="Doughnut chart of satisfaction levels">Satisfaction level percentages.</canvas>
-          </div>
-          <div class="chart-legend" id="legendSat"></div>
+          <p class="chart-label">Grade Impact Breakdown (Pie)</p>
+          <div style="position:relative;height:200px;"><canvas id="chartPie"></canvas></div>
+          <div class="chart-legend" id="legendPie"></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- 03: Statistical Engine — Griar -->
-  <section class="section">
+  <section class="section" style="margin-bottom:1rem;">
     <div class="section-header">
+      <span class="badge">GRIAR</span>
       <h2>03 · Statistical Engine</h2>
-      <span class="badge">STUDENT 3: GRIAR</span>
     </div>
     <div class="panel">
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="stat-label">Average Usage (Mean)</span>
+          <span class="stat-label">Mean (Avg Daily Usage)</span>
           <span class="stat-val" id="statMean">—</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Most Used Tool (Mode)</span>
-          <span class="stat-val" id="statMode">—</span>
+          <span class="stat-label">Median (Daily Usage)</span>
+          <span class="stat-val" id="statMedian">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Mode (Most Used Tool)</span>
+          <span class="stat-val" id="statMode" style="font-size:1rem;color:var(--accent);">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Variance</span>
+          <span class="stat-val" id="statVariance">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Standard Deviation</span>
+          <span class="stat-val" id="statStdDev">—</span>
         </div>
         <div class="stat-card">
           <span class="stat-label">Pearson Correlation (r)</span>
           <span class="stat-val" id="rPearson">—</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Standard Deviation</span>
-          <span class="stat-val" id="statStdDev">—</span>
+          <span class="stat-label">R² (Goodness of Fit)</span>
+          <span class="stat-val" id="statRSquared">—</span>
         </div>
       </div>
-      <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 0.8rem;">
-        <strong>Regression Equation:</strong> <span id="rEquation" style="color: var(--accent);">Waiting for analysis...</span>
+      <div style="margin-top:1.25rem;padding:0.75rem 1rem;background:#f8fafc;border-radius:10px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:0.65rem;color:var(--text-dim);font-weight:700;text-transform:uppercase;">Linear Regression</span>
+        <span id="rEquation" style="color:var(--secondary);font-family:monospace;font-size:0.85rem;font-weight:600;">Calculating...</span>
       </div>
     </div>
   </section>
+
+  <p style="text-align:center;color:var(--text-dim);font-size:0.65rem;">University of Perpetual Help – Molino · Data Science 2026</p>
 
 </main>
 
@@ -240,20 +178,17 @@
 // -----------------------------------------------
 // STUDENT 1: DATA ENGINE (MAGBANUA)
 // -----------------------------------------------
-
 window.DS = [];
 
 function onDataReady() {
-  console.log("Group 4: data loaded, " + window.DS.length + " rows");
-  renderCharts();
-  // Griar: call your stats function here
+  initCharts();
+  renderStats(window.DS);
 }
 
 async function loadDataset() {
   try {
     const response = await fetch('AI_Student_Life_Pakistan_2026.csv');
     const csvText = await response.text();
-
     const lines = csvText.trim().split('\n');
     const headers = lines[0].split(',').map(h => h.trim());
 
@@ -268,34 +203,26 @@ async function loadDataset() {
     });
 
     renderTable(window.DS);
-    document.getElementById('rowCount').textContent = window.DS.length + " ROWS FOUND";
+    document.getElementById('rowCount').textContent = window.DS.length + ' RECORDS';
     onDataReady();
 
   } catch (error) {
-    console.error("Load failed:", error);
     document.getElementById('tableBody').innerHTML =
-      `<tr><td colspan="8" style="color:var(--danger); text-align:center;">Failed to load CSV. Open with Live Server.</td></tr>`;
+      `<tr><td colspan="8" style="color:var(--danger);text-align:center;padding:2rem;">Data file not found. Check local server.</td></tr>`;
   }
 }
 
 function renderTable(data) {
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = "";
-
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
   data.forEach(s => {
-    const tr = document.createElement("tr");
-    const impactColor = s.Impact_on_Grades === "Improved"
-      ? "grade-up"
-      : (s.Impact_on_Grades && s.Impact_on_Grades.includes("Decline") ? "grade-down" : "");
-
+    const tr = document.createElement('tr');
+    const impactColor = s.Impact_on_Grades === 'Improved' ? 'grade-up' :
+                       (s.Impact_on_Grades && s.Impact_on_Grades.includes('Decline') ? 'grade-down' : '');
     tr.innerHTML = `
-      <td>${s.Student_ID}</td>
-      <td>${s.Age}</td>
-      <td>${s.City}</td>
-      <td><strong>${s.AI_Tool_Used}</strong></td>
-      <td>${s.Daily_Usage_Hours}h</td>
-      <td>${s.Purpose}</td>
-      <td class="${impactColor}">${s.Impact_on_Grades}</td>
+      <td>${s.Student_ID}</td><td>${s.Age}</td><td>${s.City}</td>
+      <td><strong>${s.AI_Tool_Used}</strong></td><td>${s.Daily_Usage_Hours}h</td>
+      <td>${s.Purpose}</td><td class="${impactColor}">${s.Impact_on_Grades}</td>
       <td>${s.Satisfaction_Level}</td>
     `;
     tbody.appendChild(tr);
@@ -306,30 +233,24 @@ function applyFilterSort() {
   const filter = document.getElementById('filterInput').value.toLowerCase();
   const sortKey = document.getElementById('sortSelect').value;
   let res = [...window.DS];
-
-  if (filter) {
-    res = res.filter(d =>
-      d.AI_Tool_Used.toLowerCase().includes(filter) ||
-      d.Purpose.toLowerCase().includes(filter)
-    );
-  }
-
+  if (filter) res = res.filter(d =>
+    d.AI_Tool_Used.toLowerCase().includes(filter) ||
+    d.Purpose.toLowerCase().includes(filter)
+  );
   if (sortKey) {
-    res.sort((a, b) => {
-      if (typeof a[sortKey] === 'string') return a[sortKey].localeCompare(b[sortKey]);
-      return b[sortKey] - a[sortKey];
-    });
+    res.sort((a, b) => typeof a[sortKey] === 'string'
+      ? a[sortKey].localeCompare(b[sortKey])
+      : b[sortKey] - a[sortKey]);
   }
-
   renderTable(res);
-  document.getElementById('rowCount').textContent = res.length + " ROWS FOUND";
+  document.getElementById('rowCount').textContent = res.length + ' RECORDS';
 }
 
 function resetTable() {
-  document.getElementById('filterInput').value = "";
-  document.getElementById('sortSelect').value = "";
+  document.getElementById('filterInput').value = '';
+  document.getElementById('sortSelect').value = '';
   renderTable(window.DS);
-  document.getElementById('rowCount').textContent = window.DS.length + " ROWS FOUND";
+  document.getElementById('rowCount').textContent = window.DS.length + ' RECORDS';
 }
 
 document.addEventListener('DOMContentLoaded', loadDataset);
@@ -337,201 +258,234 @@ document.addEventListener('DOMContentLoaded', loadDataset);
 
 // -----------------------------------------------
 // STUDENT 2: VISUALIZATION (LAXA)
+// Branch: feature/visualization
 // -----------------------------------------------
+const chartInstances = {};
 
-const TOOL_COLORS   = ['#58a6ff','#3fb950','#f78166','#d2a8ff','#ffa657','#79c0ff','#56d364','#ff7b72'];
-const IMPACT_COLORS = { 'Improved':'#3fb950', 'No Change':'#8b949e', 'Declined':'#f85149', 'Slightly Declined':'#ffa657' };
-const SAT_COLORS    = { 'High':'#3fb950', 'Medium':'#ffa657', 'Low':'#f85149' };
+function destroyChart(id) {
+  if (chartInstances[id]) { chartInstances[id].destroy(); chartInstances[id] = null; }
+}
 
-function renderCharts() {
-  const DS = window.DS;
-  const toolCounts = {}, usageBuckets = {}, satCounts = {};
-
-  DS.forEach(d => {
-    const tool  = d.AI_Tool_Used  || 'Unknown';
-    const sat   = d.Satisfaction_Level || 'Unknown';
-    const usage = parseFloat(d.Daily_Usage_Hours) || 0;
-
-    toolCounts[tool] = (toolCounts[tool] || 0) + 1;
-    satCounts[sat]   = (satCounts[sat]   || 0) + 1;
-
-    const bucket = Math.floor(usage) + '-' + (Math.floor(usage) + 1) + 'h';
-    usageBuckets[bucket] = (usageBuckets[bucket] || 0) + 1;
+function drawBarChart(canvasId, data) {
+  destroyChart(canvasId);
+  const groups = {};
+  data.forEach(d => {
+    const bucket = Math.floor(d.Daily_Usage_Hours) + '-' + (Math.floor(d.Daily_Usage_Hours) + 1) + 'h';
+    groups[bucket] = (groups[bucket] || 0) + 1;
   });
+  const labels = Object.keys(groups).sort((a, b) => parseFloat(a) - parseFloat(b));
+  chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Students', data: labels.map(l => groups[l]), backgroundColor: '#6366f1', borderRadius: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#f1f5f9' } }
+      }
+    }
+  });
+}
 
-  // top 8 tools by count
-  const tools   = Object.keys(toolCounts).sort((a,b) => toolCounts[b]-toolCounts[a]).slice(0,8);
-  const tColors = tools.map((_,i) => TOOL_COLORS[i % TOOL_COLORS.length]);
+function drawScatterPlot(canvasId, data) {
+  destroyChart(canvasId);
+  const satMap = { 'Low': 1, 'Medium': 2, 'High': 3 };
+  const points = data.map(d => ({
+    x: parseFloat(d.Daily_Usage_Hours) || 0,
+    y: satMap[d.Satisfaction_Level] || 0
+  }));
+  chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
+    type: 'scatter',
+    data: { datasets: [{ label: 'Student', data: points, backgroundColor: 'rgba(14,165,233,0.45)', pointRadius: 4, pointHoverRadius: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { title: { display: true, text: 'Daily Usage (hrs)', color: '#94a3b8', font: { size: 10 } }, ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+        y: { title: { display: true, text: 'Satisfaction', color: '#94a3b8', font: { size: 10 } }, ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => ['', 'Low', 'Medium', 'High'][v] || v }, grid: { color: '#f1f5f9' }, min: 0, max: 4 }
+      }
+    }
+  });
+}
 
-  // shared axis style
-  const axisStyle = { ticks:{ color:'#8b949e' }, grid:{ color:'#30363d' } };
+function drawHistogram(canvasId, data) {
+  destroyChart(canvasId);
+  const bins = { '0-1h': 0, '1-2h': 0, '2-3h': 0, '3-4h': 0, '4-5h': 0, '5h+': 0 };
+  data.forEach(d => {
+    const h = parseFloat(d.Daily_Usage_Hours) || 0;
+    if (h < 1)      bins['0-1h']++;
+    else if (h < 2) bins['1-2h']++;
+    else if (h < 3) bins['2-3h']++;
+    else if (h < 4) bins['3-4h']++;
+    else if (h < 5) bins['4-5h']++;
+    else            bins['5h+']++;
+  });
+  chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(bins),
+      datasets: [{ label: 'Students', data: Object.values(bins), backgroundColor: '#8b5cf6', borderRadius: 6, barPercentage: 1.0, categoryPercentage: 0.9 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#f1f5f9' } }
+      }
+    }
+  });
+}
 
-  // chart 1 — pie: which tools are most used
-  new Chart(document.getElementById('chartTool'), {
+function drawPieChart(canvasId, data) {
+  destroyChart(canvasId);
+  const counts = {};
+  data.forEach(d => { const g = d.Impact_on_Grades || 'Unknown'; counts[g] = (counts[g] || 0) + 1; });
+  const colorMap = { 'Improved': '#10b981', 'No Change': '#6366f1', 'Declined': '#ef4444', 'Slightly Declined': '#f59e0b' };
+  const labels = Object.keys(counts);
+  const colors = labels.map(l => colorMap[l] || '#94a3b8');
+  chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
     type: 'pie',
-    data: {
-      labels: tools,
-      datasets: [{ data: tools.map(t => toolCounts[t]), backgroundColor: tColors, borderColor:'#161b22', borderWidth:2 }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} } }
+    data: { labels, datasets: [{ data: labels.map(l => counts[l]), backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
   });
-  const leg1 = document.getElementById('legendTool');
-  tools.forEach((t,i) => {
-    leg1.innerHTML += `<span><span class="legend-dot" style="background:${tColors[i]}"></span>${t}</span>`;
+  const legend = document.getElementById('legendPie');
+  legend.innerHTML = '';
+  labels.forEach((l, i) => {
+    const pct = ((counts[l] / data.length) * 100).toFixed(1);
+    legend.innerHTML += `<span><span class="legend-dot" style="background:${colors[i]}"></span>${l} — ${pct}%</span>`;
   });
+}
 
-  // chart 2 — stacked bar: grade impact broken down per tool
-  const impactCats = ['Improved','No Change','Declined','Slightly Declined'];
-  new Chart(document.getElementById('chartImpact'), {
-    type: 'bar',
-    data: {
-      labels: tools,
-      datasets: impactCats.map(cat => ({
-        label: cat,
-        data: tools.map(t => DS.filter(d => d.AI_Tool_Used===t && d.Impact_on_Grades===cat).length),
-        backgroundColor: IMPACT_COLORS[cat] || '#8b949e',
-        borderRadius: 3,
-        borderSkipped: false
-      }))
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales: {
-        x: { stacked:true, ticks:{ color:'#8b949e', font:{size:10}, maxRotation:45 }, grid:{ color:'#30363d' } },
-        y: { stacked:true, ...axisStyle }
-      }
-    }
-  });
-  const leg2 = document.getElementById('legendImpact');
-  impactCats.forEach(cat => {
-    leg2.innerHTML += `<span><span class="legend-dot" style="background:${IMPACT_COLORS[cat]}"></span>${cat}</span>`;
-  });
-
-  // chart 3 — bar: how many hours students use AI per day
-  const buckets = Object.keys(usageBuckets).sort((a,b) => parseFloat(a)-parseFloat(b));
-  new Chart(document.getElementById('chartUsage'), {
-    type: 'bar',
-    data: {
-      labels: buckets,
-      datasets: [{ label:'Students', data: buckets.map(b => usageBuckets[b]), backgroundColor:'#58a6ff', borderRadius:3, borderSkipped:false }]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales: {
-        x: { ticks:{ color:'#8b949e', font:{size:10} }, grid:{ color:'#30363d' } },
-        y: axisStyle
-      }
-    }
-  });
-
-  // chart 4 — doughnut: overall satisfaction split
-  const satLabels = Object.keys(satCounts);
-  const satClrs   = satLabels.map(s => SAT_COLORS[s] || '#8b949e');
-  new Chart(document.getElementById('chartSat'), {
-    type: 'doughnut',
-    data: {
-      labels: satLabels,
-      datasets: [{ data: satLabels.map(s => satCounts[s]), backgroundColor: satClrs, borderColor:'#161b22', borderWidth:2 }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} } }
-  });
-  const leg4 = document.getElementById('legendSat');
-  satLabels.forEach((s,i) => {
-    const pct = ((satCounts[s] / DS.length) * 100).toFixed(1);
-    leg4.innerHTML += `<span><span class="legend-dot" style="background:${satClrs[i]}"></span>${s} ${pct}%</span>`;
-  });
+function initCharts() {
+  drawBarChart('chartBar', window.DS);
+  drawScatterPlot('chartScatter', window.DS);
+  drawHistogram('chartHistogram', window.DS);
+  drawPieChart('chartPie', window.DS);
 }
 
 
 // -----------------------------------------------
-// STUDENT 3: STATISTICS (GRIAR)
+// STUDENT 3: STATISTICAL ENGINE (GRIAR)
 // -----------------------------------------------
-// renderStats() goes here
-function renderStats() {
-  const DS = window.DS;
-  if (!DS || !DS.length) return;
 
-  // Convert usage to numbers
-  const usage = DS.map(d => parseFloat(d.Daily_Usage_Hours) || 0);
+/**
+ * 1. mean(arr) — arithmetic average
+ */
+function mean(arr) {
+  if (!arr.length) return 0;
+  return arr.reduce((sum, v) => sum + v, 0) / arr.length;
+}
 
-  // Impact scoring system
-  const impactScore = {
-    "Improved": 1,
-    "No Change": 0,
-    "Declined": -1,
-    "Slightly Declined": -0.5
-  };
+/**
+ * 2. median(arr) — middle value of sorted array
+ */
+function median(arr) {
+  if (!arr.length) return 0;
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
+}
 
-  const impact = DS.map(d => impactScore[d.Impact_on_Grades] ?? 0);
-
-  // -------------------
-  // MEAN
-  // -------------------
-  const mean = usage.reduce((a, b) => a + b, 0) / usage.length;
-
-  // -------------------
-  // MODE
-  // -------------------
+/**
+ * 3. mode(arr) — most frequently occurring value
+ */
+function mode(arr) {
+  if (!arr.length) return null;
   const freq = {};
-  DS.forEach(d => {
-    freq[d.AI_Tool_Used] = (freq[d.AI_Tool_Used] || 0) + 1;
-  });
+  arr.forEach(v => { freq[v] = (freq[v] || 0) + 1; });
+  return Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
+}
 
-  const mode = Object.keys(freq).reduce((a, b) =>
-    freq[a] > freq[b] ? a : b
-  );
+/**
+ * 4. variance(arr) — population variance
+ */
+function variance(arr) {
+  if (!arr.length) return 0;
+  const m = mean(arr);
+  return arr.reduce((sum, v) => sum + Math.pow(v - m, 2), 0) / arr.length;
+}
 
-  // -------------------
-  // STANDARD DEVIATION
-  // -------------------
-  const variance =
-    usage.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / usage.length;
+/**
+ * 5. stdDev(arr) — square root of variance
+ */
+function stdDev(arr) {
+  return Math.sqrt(variance(arr));
+}
 
-  const stdDev = Math.sqrt(variance);
-
-  // -------------------
-  // PEARSON CORRELATION
-  // -------------------
-  const impactMean = impact.reduce((a, b) => a + b, 0) / impact.length;
-
+/**
+ * 6. pearsonCorr(x, y) — Pearson correlation coefficient r
+ */
+function pearsonCorr(x, y) {
+  if (x.length !== y.length || x.length === 0) return 0;
+  const mx = mean(x);
+  const my = mean(y);
   let num = 0, denX = 0, denY = 0;
-
-  for (let i = 0; i < DS.length; i++) {
-    const dx = usage[i] - mean;
-    const dy = impact[i] - impactMean;
-
-    num += dx * dy;
+  for (let i = 0; i < x.length; i++) {
+    const dx = x[i] - mx;
+    const dy = y[i] - my;
+    num  += dx * dy;
     denX += dx * dx;
     denY += dy * dy;
   }
-
-  const r = num / Math.sqrt(denX * denY || 1);
-
-  // -------------------
-  // REGRESSION LINE
-  // y = a + bx
-  // -------------------
-  const b = num / (denX || 1);
-  const a = impactMean - b * mean;
-
-  // -------------------
-  // UPDATE UI
-  // -------------------
-  document.getElementById("statMean").textContent = mean.toFixed(2);
-  document.getElementById("statMode").textContent = mode;
-  document.getElementById("statStdDev").textContent = stdDev.toFixed(2);
-  document.getElementById("rPearson").textContent = r.toFixed(3);
-  document.getElementById("rEquation").textContent =
-    `y = ${a.toFixed(2)} + ${b.toFixed(2)}x`;
+  return num / Math.sqrt((denX * denY) || 1);
 }
 
-// connect it to dataset loading
-function onDataReady() {
-  console.log("Dataset loaded:", window.DS.length);
-  renderCharts();
-  renderStats(); // IMPORTANT
+/**
+ * 7. linearRegression(x, y) — { slope, intercept, rSquared }
+ */
+function linearRegression(x, y) {
+  if (x.length !== y.length || x.length === 0) return { slope: 0, intercept: 0, rSquared: 0 };
+  const mx = mean(x);
+  const my = mean(y);
+  let num = 0, den = 0;
+  for (let i = 0; i < x.length; i++) {
+    num += (x[i] - mx) * (y[i] - my);
+    den += (x[i] - mx) * (x[i] - mx);
+  }
+  const slope     = num / (den || 1);
+  const intercept = my - slope * mx;
+  const r         = pearsonCorr(x, y);
+  const rSquared  = r * r;
+  return { slope, intercept, rSquared };
+}
+
+/**
+ * 8. renderStats(DS) — called inside onDataReady()
+ *    Populates all stat cards using the functions above.
+ */
+function renderStats(DS) {
+  if (!DS || !DS.length) return;
+
+  // --- raw arrays ---
+  const usage     = DS.map(d => parseFloat(d.Daily_Usage_Hours) || 0);
+  const toolNames = DS.map(d => d.AI_Tool_Used);
+
+  const impactScore = { 'Improved': 1, 'No Change': 0, 'Declined': -1, 'Slightly Declined': -0.5 };
+  const impact = DS.map(d => impactScore[d.Impact_on_Grades] ?? 0);
+
+  // --- compute ---
+  const meanVal    = mean(usage);
+  const medianVal  = median(usage);
+  const modeVal    = mode(toolNames);
+  const varVal     = variance(usage);
+  const stdDevVal  = stdDev(usage);
+  const r          = pearsonCorr(usage, impact);
+  const { slope, intercept, rSquared } = linearRegression(usage, impact);
+
+  // --- update DOM ---
+  document.getElementById('statMean').textContent     = meanVal.toFixed(2) + 'h';
+  document.getElementById('statMedian').textContent   = medianVal.toFixed(2) + 'h';
+  document.getElementById('statMode').textContent     = modeVal;
+  document.getElementById('statVariance').textContent = varVal.toFixed(3);
+  document.getElementById('statStdDev').textContent   = stdDevVal.toFixed(3);
+  document.getElementById('rPearson').textContent     = r.toFixed(4);
+  document.getElementById('statRSquared').textContent = rSquared.toFixed(4);
+  document.getElementById('rEquation').textContent    =
+    `y = ${intercept.toFixed(3)} + ${slope.toFixed(3)}x  |  R² = ${rSquared.toFixed(4)}`;
 }
 </script>
 </body>
