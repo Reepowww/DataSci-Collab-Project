@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>eduAI — Student Analytics</title>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-
   <style>
     :root {
       --bg: #f8fafc;
@@ -192,6 +190,14 @@
           <span class="stat-label">Standard Deviation</span>
           <span class="stat-val" id="statStdDev">—</span>
         </div>
+        <div class="stat-card">
+          <span class="stat-label">Pearson Correlation (r)</span>
+          <span class="stat-val" id="rPearson">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">R² (Goodness of Fit)</span>
+          <span class="stat-val" id="statRSquared">—</span>
+        </div>
       </div>
       <div style="margin-top:1.25rem; padding:0.75rem 1rem; background:#f8fafc; border-radius:10px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
         <span style="font-size:0.65rem; color:var(--text-dim); font-weight:700; text-transform:uppercase;">Linear Regression</span>
@@ -272,8 +278,8 @@ function applyFilterSort() {
 }
 
 function resetTable() {
-  document.getElementById('filterInput').value = "";
-  document.getElementById('sortSelect').value = "";
+  document.getElementById('filterInput').value = '';
+  document.getElementById('sortSelect').value = '';
   renderTable(window.DS);
   document.getElementById('rowCount').textContent = window.DS.length + " RECORDS";
 }
@@ -285,6 +291,7 @@ document.addEventListener('DOMContentLoaded', loadDataset);
 // STUDENT 2: VISUALIZATION (LAXA)
 // Branch: feature/visualization
 // -----------------------------------------------
+const chartInstances = {};
 
 // keeps chart instances so old ones can be destroyed before redrawing
 const chartInstances = {};
@@ -372,6 +379,7 @@ function drawHistogram(canvasId, data) {
     else if (h < 5) bins['4-5h']++;
     else bins['5h+']++;
   });
+}
 
   chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
     type: 'bar',
@@ -432,7 +440,7 @@ function initCharts() {
 
 
 // -----------------------------------------------
-// STUDENT 3: STATISTICS (GRIAR)
+// STUDENT 3: STATISTICAL ENGINE (GRIAR)
 // -----------------------------------------------
 function renderStats(DS) {
   if (!DS || !DS.length) return;
