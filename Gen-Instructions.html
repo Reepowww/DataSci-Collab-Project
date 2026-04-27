@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>eduAI — Student Analytics</title>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-
   <style>
     :root {
       --bg: #f8fafc;
@@ -76,10 +74,10 @@
     tr:hover td { background: var(--surface-raised); color: var(--text); }
     tr strong { color: var(--text); }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
     .stat-card { background: var(--surface); padding: 1.25rem; border-radius: var(--radius); border: 1px solid var(--border); transition: var(--transition); }
     .stat-card:hover { border-color: var(--accent); }
-    .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--text); display: block; margin-top: 4px; }
+    .stat-val { font-size: 1.35rem; font-weight: 800; color: var(--text); display: block; margin-top: 4px; }
     .stat-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
 
     .grade-up { color: var(--success); font-weight: 700; }
@@ -104,7 +102,6 @@
 
 <main>
 
-  <!-- 01: Analytics Explorer — Magbanua -->
   <section class="section">
     <div class="section-header">
       <span class="badge">MAGBANUA</span>
@@ -139,7 +136,6 @@
     </div>
   </section>
 
-  <!-- 02: Visual Intelligence — Laxa -->
   <section class="section">
     <div class="section-header">
       <span class="badge">LAXA</span>
@@ -168,7 +164,6 @@
     </div>
   </section>
 
-  <!-- 03: Statistical Engine — Griar -->
   <section class="section" style="margin-bottom:1rem;">
     <div class="section-header">
       <span class="badge">GRIAR</span>
@@ -177,20 +172,32 @@
     <div class="panel">
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="stat-label">Avg. Daily Usage (Mean)</span>
+          <span class="stat-label">Mean Usage</span>
           <span class="stat-val" id="statMean">—</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Most Used Tool (Mode)</span>
+          <span class="stat-label">Median Usage</span>
+          <span class="stat-val" id="statMedian">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Mode Tool</span>
           <span class="stat-val" id="statMode" style="font-size:1rem; color:var(--accent);">—</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Correlation (r)</span>
+          <span class="stat-label">Variance</span>
+          <span class="stat-val" id="statVar">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Std Deviation</span>
+          <span class="stat-val" id="statStdDev">—</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Pearson (r)</span>
           <span class="stat-val" id="rPearson">—</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Standard Deviation</span>
-          <span class="stat-val" id="statStdDev">—</span>
+          <span class="stat-label">R² (Goodness)</span>
+          <span class="stat-val" id="statRSquared">—</span>
         </div>
       </div>
       <div style="margin-top:1.25rem; padding:0.75rem 1rem; background:#f8fafc; border-radius:10px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
@@ -218,6 +225,8 @@ function onDataReady() {
 async function loadDataset() {
   try {
     const response = await fetch('AI_Student_Life_Pakistan_2026.csv');
+    if (!response.ok) throw new Error("File not found");
+    
     const csvText = await response.text();
     const lines = csvText.trim().split('\n');
     const headers = lines[0].split(',').map(h => h.trim());
@@ -237,8 +246,9 @@ async function loadDataset() {
     onDataReady();
 
   } catch (error) {
+    console.error(error);
     document.getElementById('tableBody').innerHTML =
-      `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Data file not found. Check local server.</td></tr>`;
+      `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Data file not found. Ensure "AI_Student_Life_Pakistan_2026.csv" is in the folder and run via Local Server.</td></tr>`;
   }
 }
 
@@ -248,7 +258,7 @@ function renderTable(data) {
   data.forEach(s => {
     const tr = document.createElement("tr");
     const impactColor = s.Impact_on_Grades === "Improved" ? "grade-up" :
-                       (s.Impact_on_Grades && s.Impact_on_Grades.includes("Decline") ? "grade-down" : "");
+                        (s.Impact_on_Grades && s.Impact_on_Grades.includes("Decline") ? "grade-down" : "");
     tr.innerHTML = `
       <td>${s.Student_ID}</td><td>${s.Age}</td><td>${s.City}</td>
       <td><strong>${s.AI_Tool_Used}</strong></td><td>${s.Daily_Usage_Hours}h</td>
@@ -272,8 +282,8 @@ function applyFilterSort() {
 }
 
 function resetTable() {
-  document.getElementById('filterInput').value = "";
-  document.getElementById('sortSelect').value = "";
+  document.getElementById('filterInput').value = '';
+  document.getElementById('sortSelect').value = '';
   renderTable(window.DS);
   document.getElementById('rowCount').textContent = window.DS.length + " RECORDS";
 }
@@ -432,42 +442,93 @@ function initCharts() {
 
 
 // -----------------------------------------------
-// STUDENT 3: STATISTICS (GRIAR)
+// STUDENT 3: STATISTICAL ENGINE (GRIAR)
 // -----------------------------------------------
-function renderStats(DS) {
-  if (!DS || !DS.length) return;
 
-  const usage = DS.map(d => parseFloat(d.Daily_Usage_Hours) || 0);
-  const impactScore = { "Improved": 1, "No Change": 0, "Declined": -1, "Slightly Declined": -0.5 };
-  const impact = DS.map(d => impactScore[d.Impact_on_Grades] ?? 0);
+// Helper Functions for Tasks 1-7
+const mean = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
 
-  const mean = usage.reduce((a, b) => a + b, 0) / usage.length;
+const median = (arr) => {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+};
 
+const mode = (arr) => {
   const freq = {};
-  DS.forEach(d => { freq[d.AI_Tool_Used] = (freq[d.AI_Tool_Used] || 0) + 1; });
-  const mode = Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
+  arr.forEach(v => freq[v] = (freq[v] || 0) + 1);
+  return Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
+};
 
-  const variance = usage.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / usage.length;
-  const stdDev = Math.sqrt(variance);
+const variance = (arr) => {
+  const avg = mean(arr);
+  return arr.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / arr.length;
+};
 
-  const impactMean = impact.reduce((a, b) => a + b, 0) / impact.length;
+const stdDev = (arr) => Math.sqrt(variance(arr));
+
+const pearsonCorr = (x, y) => {
+  const n = x.length;
+  const mx = mean(x);
+  const my = mean(y);
   let num = 0, denX = 0, denY = 0;
-  for (let i = 0; i < DS.length; i++) {
-    const dx = usage[i] - mean;
-    const dy = impact[i] - impactMean;
+  for (let i = 0; i < n; i++) {
+    const dx = x[i] - mx;
+    const dy = y[i] - my;
     num += dx * dy;
     denX += dx * dx;
     denY += dy * dy;
   }
-  const r = num / Math.sqrt(denX * denY || 1);
-  const b = num / (denX || 1);
-  const a = impactMean - b * mean;
+  return num / Math.sqrt(denX * denY || 1);
+};
 
-  document.getElementById("statMean").textContent = mean.toFixed(1) + "h";
-  document.getElementById("statMode").textContent = mode;
-  document.getElementById("statStdDev").textContent = stdDev.toFixed(2);
-  document.getElementById("rPearson").textContent = r.toFixed(3);
-  document.getElementById("rEquation").textContent = `y = ${a.toFixed(2)} + ${b.toFixed(2)}x`;
+const linearRegression = (x, y) => {
+  const n = x.length;
+  const mx = mean(x);
+  const my = mean(y);
+  let num = 0, denX = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = x[i] - mx;
+    const dy = y[i] - my;
+    num += dx * dy;
+    denX += dx * dx;
+  }
+  const slope = num / (denX || 1);
+  const intercept = my - slope * mx;
+  const r = pearsonCorr(x, y);
+  return { slope, intercept, rSquared: Math.pow(r, 2), r };
+};
+
+// Main DOM Render Function (Task 8)
+function renderStats(DS) {
+  if (!DS || !DS.length) return;
+
+  const usageArr = DS.map(d => parseFloat(d.Daily_Usage_Hours) || 0);
+  const toolArr = DS.map(d => d.AI_Tool_Used);
+  const impactMap = { "Improved": 1, "No Change": 0, "Slightly Declined": -0.5, "Declined": -1 };
+  const impactArr = DS.map(d => impactMap[d.Impact_on_Grades] ?? 0);
+
+  // Execute Stats
+  const avg = mean(usageArr);
+  const med = median(usageArr);
+  const mod = mode(toolArr);
+  const v = variance(usageArr);
+  const sd = stdDev(usageArr);
+  const reg = linearRegression(usageArr, impactArr);
+
+  // Update UI
+  document.getElementById("statMean").textContent = avg.toFixed(1) + "h";
+  document.getElementById("statMedian").textContent = med.toFixed(1) + "h";
+  document.getElementById("statMode").textContent = mod;
+  document.getElementById("statVar").textContent = v.toFixed(2);
+  document.getElementById("statStdDev").textContent = sd.toFixed(2);
+  document.getElementById("statRSquared").textContent = reg.rSquared.toFixed(3);
+  
+  const rElements = document.querySelectorAll("#rPearson");
+  rElements.forEach(el => el.textContent = reg.r.toFixed(3));
+  
+  document.getElementById("rEquation").textContent = 
+    `y = ${reg.intercept.toFixed(2)} + ${reg.slope.toFixed(2)}x`;
 }
 </script>
 </body>
